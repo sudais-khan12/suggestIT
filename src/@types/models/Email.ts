@@ -1,3 +1,5 @@
+import { Message } from "@/models/Users";
+
 export type EmailServiceProvider = "Gmail" | "Outlook" | "Imap";
 
 export type EmailStatus = {
@@ -16,7 +18,9 @@ export interface EmailOptions {
   from: string;
 }
 
-export interface EmailApiResponse {
+export interface ApiResponse {
   message: string;
-  messageId: string;
+  success: boolean;
+  isAcceptingMessage?: boolean;
+  messages?: Message[];
 }

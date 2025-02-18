@@ -34,7 +34,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     };
 
     const transporter = createTransporter();
-    const { rejected, messageId } = await transporter.sendMail(mailOptions);
+    const { rejected } = await transporter.sendMail(mailOptions);
 
     if (rejected.length > 0) {
       const rejectedEmails = rejected.join(", ");
@@ -46,7 +46,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     const response: EmailApiResponse = {
       message: "Email sent successfully!",
-      messageId,
+      success: true,
     };
 
     return NextResponse.json(response, { status: 200 });
