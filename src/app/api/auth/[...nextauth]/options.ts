@@ -1,3 +1,4 @@
+// next-auth.ts
 import CredentialsProvider from "next-auth/providers/credentials";
 import { NextAuthOptions } from "next-auth";
 import bcrypt from "bcryptjs";
@@ -10,25 +11,25 @@ export const authOptions: NextAuthOptions = {
       id: "credentials",
       name: "Credentials",
       credentials: {
-        email: {
-          label: "Email",
-          type: "email",
-          placeholder: "example@email.com",
+        identifier: {
+          label: "Email or Username",
+          type: "text",
+          placeholder: "Enter your email or username",
         },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         await dbConnect();
 
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email and password are required.");
+        if (!credentials?.identifier || !credentials?.password) {
+          throw new Error("Identifier and password are required.");
         }
 
         try {
           const user = await UserModel.findOne({
             $or: [
-              { email: credentials.email },
-              { userName: credentials.email }, // Allow login with username
+              { email: credentials.identifier },
+              { userName: credentials.identifier },
             ],
           });
 
@@ -44,55 +45,59 @@ export const authOptions: NextAuthOptions = {
             credentials.password,
             user.password
           );
-
           if (!isValidPassword) {
             throw new Error("Invalid password.");
           }
 
           return {
-            id: user._id.toString(),
+            id: user._id as unknown as string,
             email: user.email,
-            name: user.userName,
+            userName: user.userName,
+            isVerified: user.isVerified,
+            isAcceptingMessages: user.isAcceptingMessages,
           };
-        } catch (error: any) {
-          throw new Error(error.message || "Failed to log in.");
+        } catch (error: unknown) {
+          throw new Error(
+            error instanceof Error ? error.message : "Failed to log in."
+          );
         }
       },
     }),
   ],
 
-  // Optional: Customize session and JWT settings
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 30 * 24 * 60 * 60,
   },
 
-  // Optional: Customize pages (e.g., sign-in, error pages)
   pages: {
-    signIn: "/auth/signin",
+    signIn: "/signin",
     error: "/auth/error",
   },
 
-  // Optional: Callbacks for custom logic
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        token._id = user._id ? user._id.toString() : undefined;
+        token.isVerified = user.isVerified;
+        token.isAcceptingMessages = user.isAcceptingMessages;
         token.email = user.email;
-        token.name = user.name;
+        token.userName = user.userName;
       }
       return token;
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.id;
-        session.user.email = token.email;
-        session.user.name = token.name;
+        session.user = {
+          _id: token._id?.toString(),
+          isVerified: token.isVerified,
+          isAcceptingMessages: token.isAcceptingMessages,
+          email: token.email,
+          userName: token.userName,
+        };
       }
       return session;
     },
   },
-
-  // Optional: Secret for signing tokens
   secret: process.env.NEXTAUTH_SECRET,
 };
