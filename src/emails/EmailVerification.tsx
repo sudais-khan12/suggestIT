@@ -26,21 +26,19 @@ export const EmailVerification = ({
       <meta charSet="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     </Head>
-    <Preview>Verify your email to start using suggestIT</Preview>
+    <Preview>🚀 Verify your email to start using suggestIT!</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
-          <Heading style={logo}>suggestIT</Heading>
+          <Heading style={logo}>🔥 suggestIT</Heading>
         </Section>
 
         <Section style={content}>
-          <Heading style={heading}>Email Verification</Heading>
+          <Heading style={heading}>🔒 Email Verification</Heading>
           <Text style={paragraph}>
-            Hi {username},
-            <br />
-            Thank you for creating an account with suggestIT. To complete your
-            registration, please enter the following verification code in the
-            application:
+            Hey <strong>{username}</strong>, 👋 Welcome to{" "}
+            <strong>suggestIT</strong>! To unlock all features, verify your
+            email using the **code below**:
           </Text>
 
           <div style={codeContainer}>
@@ -52,25 +50,25 @@ export const EmailVerification = ({
           </div>
 
           <Text style={paragraph}>
-            This code will expire in 15 minutes. If you did not request this
-            code, you can safely ignore this email.
+            ⏳ **This code expires in 15 minutes.** If you didn’t request this,
+            ignore this email.
           </Text>
 
           <Hr style={divider} />
 
           <Text style={supportText}>
-            Need help? Contact our support team at{" "}
+            Need help? Contact{" "}
             <Link href="mailto:sudaiskh31@gmail.com" style={link}>
-              sudaiskh31@gmail.com
-            </Link>
+              support@suggestIT.com
+            </Link>{" "}
+            📩
           </Text>
         </Section>
 
         <Section style={footer}>
           <Text style={footerText}>
-            © {new Date().getFullYear()} suggestIT. All rights reserved.
-            <br />
-            Attock, Punjab, Pakistan
+            🚀 **suggestIT** | Attock, Punjab, Pakistan ©{" "}
+            {new Date().getFullYear()} suggestIT. All rights reserved.
           </Text>
         </Section>
       </Container>
@@ -78,73 +76,76 @@ export const EmailVerification = ({
   </Html>
 );
 
-// Styles
+// 🎨 Vibrant Styling
 const main = {
-  backgroundColor: "#f6f9fc",
+  backgroundColor: "#FFF4E0",
   fontFamily:
-    '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+    '"Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
+  padding: "30px 0",
 };
 
 const container = {
   backgroundColor: "#ffffff",
   margin: "0 auto",
-  padding: "20px 0 48px",
-  maxWidth: "600px",
-  borderRadius: "8px",
-  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+  padding: "30px 0 50px",
+  maxWidth: "650px",
+  borderRadius: "12px",
+  boxShadow: "0 5px 15px rgba(255, 87, 51, 0.2)",
 };
 
 const header = {
-  padding: "32px 48px",
-  borderBottom: "1px solid #eaeaea",
+  padding: "40px",
+  background: "linear-gradient(90deg, #FF5733, #FFB533)",
+  textAlign: "center" as const,
+  borderRadius: "12px 12px 0 0",
 };
 
 const logo = {
-  color: "#2d3436",
-  fontSize: "32px",
+  color: "#ffffff",
+  fontSize: "36px",
   fontWeight: "700",
   margin: "0",
-  textAlign: "center" as const,
 };
 
 const content = {
-  padding: "32px 48px",
+  padding: "40px",
 };
 
 const heading = {
-  fontSize: "24px",
-  color: "#2d3436",
-  margin: "0 0 24px 0",
+  fontSize: "28px",
+  color: "#222",
+  margin: "0 0 20px 0",
 };
 
 const paragraph = {
-  fontSize: "16px",
-  lineHeight: "24px",
-  color: "#525f7f",
-  margin: "0 0 24px 0",
+  fontSize: "18px",
+  lineHeight: "28px",
+  color: "#444",
+  margin: "0 0 20px 0",
 };
 
 const codeContainer = {
   display: "flex",
   justifyContent: "center",
-  margin: "32px 0",
-  gap: "8px",
+  margin: "30px 0",
+  gap: "12px",
 };
 
 const codeDigit = {
-  backgroundColor: "#f4f4f4",
-  borderRadius: "4px",
-  fontSize: "24px",
-  fontWeight: "700",
-  padding: "12px 16px",
-  minWidth: "40px",
+  background: "linear-gradient(90deg, #FF5733, #FFB533)",
+  color: "#ffffff",
+  borderRadius: "6px",
+  fontSize: "28px",
+  fontWeight: "bold",
+  padding: "16px 22px",
+  minWidth: "50px",
   textAlign: "center" as const,
-  color: "#2d3436",
+  boxShadow: "0px 4px 10px rgba(255, 87, 51, 0.3)",
 };
 
 const divider = {
-  borderColor: "#eaeaea",
-  margin: "24px 0",
+  borderColor: "#ddd",
+  margin: "30px 0",
 };
 
 const supportText = {
@@ -153,19 +154,23 @@ const supportText = {
 };
 
 const link = {
-  color: "#5468ff",
+  color: "#FF5733",
   textDecoration: "none",
-  fontWeight: "600",
+  fontWeight: "bold",
 };
 
 const footer = {
-  padding: "0 48px",
+  padding: "20px 40px",
+  backgroundColor: "#FFF4E0",
+  textAlign: "center" as const,
+  borderRadius: "0 0 12px 12px",
 };
 
 const footerText = {
-  fontSize: "12px",
-  color: "#8898aa",
-  lineHeight: "16px",
+  fontSize: "14px",
+  color: "#777",
+  lineHeight: "20px",
   margin: "0",
-  textAlign: "center" as const,
 };
+
+export default EmailVerification;
