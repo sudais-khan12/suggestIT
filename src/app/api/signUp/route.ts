@@ -6,10 +6,10 @@ import bcrypt from "bcryptjs";
 export async function POST(request: Request) {
   await dbConnect();
   try {
-    const { userName, email, password } = await request.json();
+    const { name, email, password } = await request.json();
 
     // Validate required fields
-    if (!userName || !email || !password) {
+    if (!name || !email || !password) {
       return Response.json(
         { message: "All fields are required", success: false },
         { status: 400 }
@@ -17,7 +17,9 @@ export async function POST(request: Request) {
     }
 
     // Check for existing username (verified or unverified)
-    const existingUserWithUsername = await UserModel.findOne({ userName });
+    const existingUserWithUsername = await UserModel.findOne({
+      userName: name,
+    });
     if (existingUserWithUsername) {
       return Response.json(
         { message: "Username already taken", success: false },
@@ -45,7 +47,7 @@ export async function POST(request: Request) {
         existingUser.password = hashedPassword;
         existingUser.verifyCode = verificationCode;
         existingUser.verifyCodeExpiresAt = expiryDate;
-        existingUser.userName = userName;
+        existingUser.userName = name;
         existingUser.isVerified = false;
         existingUser.isAcceptingMessages = true;
         existingUser.messages = [];
@@ -55,7 +57,7 @@ export async function POST(request: Request) {
         // Send verification email
         const emailResponse = await sendVerificationEmail(
           email,
-          userName,
+          name,
           verificationCode
         );
 
@@ -85,7 +87,7 @@ export async function POST(request: Request) {
     expiryDate.setMinutes(expiryDate.getMinutes() + 15);
 
     const newUser = new UserModel({
-      userName,
+      userName: name,
       email,
       password: hashedPassword,
       verifyCode: verificationCode,
@@ -100,7 +102,7 @@ export async function POST(request: Request) {
     // Send verification email
     const emailResponse = await sendVerificationEmail(
       email,
-      userName,
+      name,
       verificationCode
     );
 
