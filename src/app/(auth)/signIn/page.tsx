@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -17,29 +18,47 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { AxiosError } from "axios";
+import { ApiResponse } from "@/@types/models/Email";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 const Page = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      email: "",
+      identifier: "",
       password: "",
     },
   });
 
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
-    const result = await signIn("credentials", {
-      redirect: false,
-      identifier: data.email,
-      password: data.password,
-    });
+    setIsSubmitting(true);
+    try {
+      const result = await signIn("credentials", {
+        redirect: false,
+        identifier: data.identifier,
+        password: data.password,
+      });
 
-    if (result?.error) {
-      toast.error(result.error);
-    } else {
-      toast.success("Sign-in successful");
-      router.push("/dashboard"); // Redirect to dashboard or home page
+      if (result?.error) {
+        if (result.error.startsWith("not verified:")) {
+          const userName = result.error.split(":")[1];
+          router.push(`/verify/${userName}`);
+        } else {
+          toast.error(result.error);
+        }
+      } else {
+        toast.success("Sign-in successful");
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      toast.error(axiosError.response?.data.message ?? "Error signing In");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -58,13 +77,20 @@ const Page = () => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
-              name="email"
+              name="identifier"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Email or Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="Email" {...field} />
+                    <Input
+                      placeholder="User Name or Email"
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                      }}
+                    />
                   </FormControl>
+
                   <FormMessage />
                 </FormItem>
               )}
@@ -76,19 +102,27 @@ const Page = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="Password" {...field} />
+                    <Input
+                      type="password"
+                      placeholder="User Password"
+                      {...field}
+                    />
                   </FormControl>
+                  <FormDescription>
+                    Choose a strong and secure password.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">
-              Sign In
+            <Button type="submit" disabled={isSubmitting} className="w-full">
+              {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : null}
+              Sign Up
             </Button>
           </form>
         </Form>
         <p className="text-sm text-center text-gray-500 dark:text-gray-400">
-          Do not have an account?{" "}
+          New Here {" "}
           <Link
             href="/signUp"
             className="font-medium text-primary-600 hover:underline dark:text-primary-500"

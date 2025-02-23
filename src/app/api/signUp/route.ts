@@ -27,7 +27,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check for existing email
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
       if (existingUser.isVerified) {

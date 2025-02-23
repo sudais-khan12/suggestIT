@@ -1,22 +1,57 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, use } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 
+interface Params {
+  username: string;
+}
+
 interface VerifyPageProps {
-  params: {
-    username: string;
-  };
+  params: Params;
 }
 
 const VerifyPage = ({ params }: VerifyPageProps) => {
   const router = useRouter();
-  const [otp, setOtp] = useState<string[]>(Array(6).fill("")); // Array to store OTP digits
-  const inputRefs = useRef<(HTMLInputElement | null)[]>(Array(6).fill(null)); // Refs for each input box
+  const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
+  const inputRefs = useRef<(HTMLInputElement | null)[]>(Array(6).fill(null));
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<number>(0);
+  const { username } = use<Params>(params);
+
+  // Load timer from localStorage on page load
+  useEffect(() => {
+    const storedStartTime = localStorage.getItem("verificationStartTime");
+    if (storedStartTime) {
+      const startTime = parseInt(storedStartTime, 10);
+      const currentTime = Math.floor(Date.now() / 1000);
+      const elapsedTime = currentTime - startTime;
+      const remainingTime = Math.max(15 * 60 - elapsedTime, 0); // 15 minutes in seconds
+      setTimeLeft(remainingTime);
+
+      if (remainingTime > 0) {
+        const timerInterval = setInterval(() => {
+          setTimeLeft((prev) => Math.max(prev - 1, 0));
+        }, 1000);
+
+        return () => clearInterval(timerInterval);
+      }
+    } else {
+      // Set the start time in localStorage if not already set
+      const startTime = Math.floor(Date.now() / 1000);
+      localStorage.setItem("verificationStartTime", startTime.toString());
+      setTimeLeft(15 * 60); // 15 minutes in seconds
+
+      const timerInterval = setInterval(() => {
+        setTimeLeft((prev) => Math.max(prev - 1, 0));
+      }, 1000);
+
+      return () => clearInterval(timerInterval);
+    }
+  }, []);
 
   // Handle OTP input change
   const handleOtpChange = (index: number, value: string) => {
@@ -69,13 +104,13 @@ const VerifyPage = ({ params }: VerifyPageProps) => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/verify", {
+      const response = await fetch("/api/verifyCode", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userName: params.username,
+          userName: username,
           code,
         }),
       });
@@ -84,7 +119,8 @@ const VerifyPage = ({ params }: VerifyPageProps) => {
 
       if (response.ok) {
         toast.success(data.message);
-        router.push("/signin"); // Redirect to sign-in page after successful verification
+        localStorage.removeItem("verificationStartTime");
+        router.push("/dashboard");
       } else {
         toast.error(data.message);
       }
@@ -94,6 +130,13 @@ const VerifyPage = ({ params }: VerifyPageProps) => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Format time left as MM:SS
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
   return (
@@ -106,6 +149,11 @@ const VerifyPage = ({ params }: VerifyPageProps) => {
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Enter the 6-digit verification code sent to your email
           </p>
+          {timeLeft > 0 && (
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Time remaining: {formatTime(timeLeft)}
+            </p>
+          )}
         </div>
         <div className="flex justify-center space-x-2">
           {Array.from({ length: 6 }).map((_, index) => (
@@ -124,11 +172,16 @@ const VerifyPage = ({ params }: VerifyPageProps) => {
         </div>
         <Button
           onClick={handleVerify}
-          disabled={isSubmitting}
+          disabled={isSubmitting || timeLeft === 0}
           className="w-full"
         >
           {isSubmitting ? "Verifying..." : "Verify"}
         </Button>
+        {timeLeft === 0 && (
+          <p className="text-sm text-center text-red-500 dark:text-red-400">
+            The verification code has expired. Please request a new one.
+          </p>
+        )}
         <p className="text-sm text-center text-gray-500 dark:text-gray-400">
           Did not receive a code?{" "}
           <Link

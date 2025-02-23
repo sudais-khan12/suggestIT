@@ -4,6 +4,7 @@ import { NextAuthOptions } from "next-auth";
 import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/dbconnect";
 import UserModel from "@/models/Users";
+import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -26,6 +27,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
+          // Find user by email or username
           const user = await UserModel.findOne({
             $or: [
               { email: credentials.identifier },
@@ -37,10 +39,7 @@ export const authOptions: NextAuthOptions = {
             throw new Error("No user found with this email or username.");
           }
 
-          if (!user.isVerified) {
-            throw new Error("Please verify your email before logging in.");
-          }
-
+          // Check if password is valid
           const isValidPassword = await bcrypt.compare(
             credentials.password,
             user.password
@@ -49,8 +48,37 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Invalid password.");
           }
 
+          // Check if user is verified
+          if (!user.isVerified) {
+            // Generate a new verification code
+            const verificationCode = Math.floor(
+              100000 + Math.random() * 900000
+            ).toString();
+            const expiryDate = new Date();
+            expiryDate.setMinutes(expiryDate.getMinutes() + 15);
+
+            // Update user with new verification code
+            user.verifyCode = verificationCode;
+            user.verifyCodeExpiresAt = expiryDate;
+            await user.save();
+
+            // Send verification email
+            const emailResponse = await sendVerificationEmail(
+              user.email,
+              user.userName,
+              verificationCode
+            );
+
+            if (!emailResponse.success) {
+              throw new Error("Failed to send verification email.");
+            }
+
+            // Return the user's email along with the error
+            throw new Error(`not verified:${user.userName}`);
+          }
+
           return {
-            id: user._id as unknown as string,
+            id: user._id?.toString() as unknown as string,
             email: user.email,
             userName: user.userName,
             isVerified: user.isVerified,
