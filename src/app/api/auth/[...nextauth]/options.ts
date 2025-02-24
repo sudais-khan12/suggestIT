@@ -73,12 +73,13 @@ export const authOptions: NextAuthOptions = {
               throw new Error("Failed to send verification email.");
             }
 
-            // Return the user's email along with the error
+            // Return the username along with the error
             throw new Error(`not verified:${user.userName}`);
           }
 
+          // User is verified, return user object
           return {
-            id: user._id?.toString() as unknown as string,
+            id: user._id.toString(),
             email: user.email,
             userName: user.userName,
             isVerified: user.isVerified,
@@ -99,7 +100,7 @@ export const authOptions: NextAuthOptions = {
   },
 
   pages: {
-    signIn: "/signin",
+    signIn: "/signIn",
     error: "/auth/error",
   },
 

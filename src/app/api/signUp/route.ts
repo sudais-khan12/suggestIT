@@ -16,7 +16,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check for existing username (verified or unverified)
     const existingUserWithUsername = await UserModel.findOne({
       userName: name,
     });
@@ -35,7 +34,6 @@ export async function POST(request: Request) {
           { status: 409 }
         );
       } else {
-        // Update existing unverified user
         const hashedPassword = await bcrypt.hash(password, 10);
         const verificationCode = Math.floor(
           100000 + Math.random() * 900000
@@ -77,7 +75,6 @@ export async function POST(request: Request) {
       }
     }
 
-    // Create new user if no existing record found
     const hashedPassword = await bcrypt.hash(password, 10);
     const verificationCode = Math.floor(
       100000 + Math.random() * 900000
@@ -98,7 +95,6 @@ export async function POST(request: Request) {
 
     await newUser.save();
 
-    // Send verification email
     const emailResponse = await sendVerificationEmail(
       email,
       name,
