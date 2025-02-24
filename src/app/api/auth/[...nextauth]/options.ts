@@ -1,4 +1,4 @@
-// next-auth.ts
+import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { NextAuthOptions } from "next-auth";
 import bcrypt from "bcryptjs";
@@ -91,6 +91,11 @@ export const authOptions: NextAuthOptions = {
           );
         }
       },
+    }),
+    // Add Google Provider
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
 

@@ -22,6 +22,7 @@ import { AxiosError } from "axios";
 import { ApiResponse } from "@/@types/models/Email";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
 
 const Page = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,6 +63,14 @@ const Page = () => {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      await signIn("google", { callbackUrl: "/dashboard" });
+    } catch (error) {
+      toast.error("Failed to sign in with Google.", error);
+    }
+  };
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
@@ -90,7 +99,6 @@ const Page = () => {
                       }}
                     />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -117,12 +125,33 @@ const Page = () => {
             />
             <Button type="submit" disabled={isSubmitting} className="w-full">
               {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : null}
-              Sign Up
+              Sign In
             </Button>
           </form>
         </Form>
+        <div className="flex items-center justify-center">
+          <div className="w-full border-t border-gray-300 dark:border-gray-700" />
+          <span className="px-2 text-sm text-gray-500 dark:text-gray-400">
+            OR
+          </span>
+          <div className="w-full border-t border-gray-300 dark:border-gray-700" />
+        </div>
+        <Button
+          onClick={handleGoogleSignIn}
+          variant="outline"
+          className="w-full flex items-center justify-center gap-2"
+        >
+          <Image
+            src="https://www.google.com/favicon.ico"
+            alt="Google"
+            width={16}
+            height={16} 
+            className="w-4 h-4" 
+          />
+          Sign In with Google
+        </Button>
         <p className="text-sm text-center text-gray-500 dark:text-gray-400">
-          New Here {" "}
+          New Here?{" "}
           <Link
             href="/signUp"
             className="font-medium text-primary-600 hover:underline dark:text-primary-500"
