@@ -24,19 +24,16 @@ export async function POST(request: Request) {
       );
     }
 
-    // Generate a new verification code
     const verificationCode = Math.floor(
       100000 + Math.random() * 900000
     ).toString();
     const expiryDate = new Date();
-    expiryDate.setMinutes(expiryDate.getMinutes() + 15); // OTP expires in 15 minutes
+    expiryDate.setMinutes(expiryDate.getMinutes() + 15); 
 
-    // Save the verification code and expiry in the database
     user.verifyCode = verificationCode;
     user.verifyCodeExpiresAt = expiryDate;
     await user.save();
 
-    // Send OTP to the user's email
     const emailResponse = await sendVerificationEmail(
       email,
       user.userName,
@@ -51,7 +48,11 @@ export async function POST(request: Request) {
     }
 
     return Response.json(
-      { message: "OTP sent to your email", success: true },
+      {
+        message: "OTP sent to your email",
+        success: true,
+        userName: user.userName,
+      },
       { status: 200 }
     );
   } catch (error) {

@@ -3,21 +3,39 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { setPasswordSchema } from "@/schemas/setPasswordSchema";
+import { ApiResponse } from "@/@types/models/Email";
+import axios, { AxiosError } from "axios";
+import { Loader2 } from "lucide-react";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 const SetNewPasswordPage = () => {
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const searchParams = useSearchParams();
+  const userId = searchParams.get("user");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async () => {
-    if (!newPassword || !confirmPassword) {
-      toast.error("Please fill in all fields.");
-      return;
-    }
+  const form = useForm<z.infer<typeof setPasswordSchema>>({
+    resolver: zodResolver(setPasswordSchema),
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
-    if (newPassword !== confirmPassword) {
+  const onSubmit = async (data: z.infer<typeof setPasswordSchema>) => {
+    if (data.password !== data.confirmPassword) {
       toast.error("Passwords do not match.");
       return;
     }
@@ -25,25 +43,17 @@ const SetNewPasswordPage = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/setNewPassword", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ newPassword }),
+      const response = await axios.post<ApiResponse>("/api/setNewPassword", {
+        userId,
+        newPassword: data.password,
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success(data.message);
-        router.push("/signin"); // Redirect to sign-in page
-      } else {
-        toast.error(data.message);
-      }
+      toast.success(response.data.message);
+      router.push("/signIn");
     } catch (error) {
-      console.error("Error setting new password:", error);
-      toast.error("An error occurred while setting your password.");
+      const axiosError = error as AxiosError<ApiResponse>;
+      toast.error(
+        axiosError.response?.data.message ?? "Error Resetting Password"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -60,27 +70,57 @@ const SetNewPasswordPage = () => {
             Enter a new password for your account.
           </p>
         </div>
-        <div className="space-y-6">
-          <Input
-            type="password"
-            placeholder="New Password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-          <Input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-          <Button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="w-full"
-          >
-            {isSubmitting ? "Updating..." : "Update Password"}
-          </Button>
-        </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Enter Your Password"
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                      }}
+                    />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Confirm Password"
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                      }}
+                    />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" disabled={isSubmitting} className="w-full">
+              {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : null}
+              Update Password
+            </Button>
+          </form>
+        </Form>
       </div>
     </div>
   );

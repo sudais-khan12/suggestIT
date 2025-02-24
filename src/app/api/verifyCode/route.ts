@@ -61,6 +61,7 @@ export async function POST(req: Request) {
       {
         message: "User verified successfully",
         success: true,
+        data: user
       },
       { status: 200 }
     );

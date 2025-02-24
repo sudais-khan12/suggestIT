@@ -1,5 +1,5 @@
 "use client";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation"; // Import useSearchParams
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -19,10 +19,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import bcrypt from "bcryptjs";
 
 const VerifyAccount = () => {
   const router = useRouter();
   const param = useParams<{ userName: string }>();
+  const searchParams = useSearchParams();
+  const purpose = searchParams.get("purpose");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -40,8 +43,15 @@ const VerifyAccount = () => {
         userName: param.userName,
         code: data.code,
       });
+
       toast.success(response.data.message);
-      router.replace("/dashboard");
+
+      if (purpose === "reset password") {
+        router.replace(`/setNewPassword?user=${response.data.data._id}`);
+      } else {
+        toast.success(response.data.message);
+        router.replace("/dashboard");
+      }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast.error(axiosError.response?.data.message ?? "Error verifying code");

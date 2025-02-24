@@ -21,6 +21,7 @@ export interface EmailOptions {
 export interface ApiResponse {
   message: string;
   success: boolean;
+  data?: string;
   isAcceptingMessage?: boolean;
   messages?: Message[];
 }

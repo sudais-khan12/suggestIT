@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   await dbConnect();
 
   try {
-    const { newPassword } = await request.json();
+    const { newPassword, userId } = await request.json();
 
     if (!newPassword) {
       return Response.json(
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     // Hash the new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    const user = await UserModel.findOne({ email: "user@example.com" }); 
+    const user = await UserModel.findOne({ _id: userId });
     if (!user) {
       return Response.json(
         { message: "User not found", success: false },

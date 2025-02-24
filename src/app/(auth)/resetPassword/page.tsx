@@ -5,40 +5,46 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { resetPasswordSchema } from "@/schemas/resetPassword";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { Loader2 } from "lucide-react";
+import { ApiResponse } from "@/@types/models/Email";
+import { z } from "zod";
+import axios, { AxiosError } from "axios";
 
 const ResetPasswordPage = () => {
-  const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async () => {
-    if (!email) {
-      toast.error("Please enter your email.");
-      return;
-    }
+  const form = useForm<z.infer<typeof resetPasswordSchema>>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
 
+  const onSubmit = async (data: z.infer<typeof resetPasswordSchema>) => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/resetPassword", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
+      const response = await axios.post<ApiResponse>("/api/resetPassword", {
+        email: data.email,
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success(data.message);
-        router.push(`/verify-otp/${email}`); // Redirect to OTP verification page
-      } else {
-        toast.error(data.message);
-      }
+      toast.success(response.data.message);
+      router.replace(`/verify/${response.data.userName}?purpose=reset password`);
     } catch (error) {
-      console.error("Error requesting password reset:", error);
-      toast.error("An error occurred while requesting a password reset.");
+      const axiosError = error as AxiosError<ApiResponse>;
+      toast.error(
+        axiosError.response?.data.message ?? "Error Resetting Password"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -55,30 +61,44 @@ const ResetPasswordPage = () => {
             Enter your email to receive an OTP.
           </p>
         </div>
-        <div className="space-y-6">
-          <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <Button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="w-full"
-          >
-            {isSubmitting ? "Sending..." : "Send OTP"}
-          </Button>
-        </div>
-        <p className="text-sm text-center text-gray-500 dark:text-gray-400">
-          Remember your password?{" "}
-          <Link
-            href="/signin"
-            className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-          >
-            Sign In
-          </Link>
-        </p>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter Your Email"
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                      }}
+                    />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" disabled={isSubmitting} className="w-full">
+              {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : null}
+              Send Email
+            </Button>
+          </form>
+
+          <p className="text-sm text-center text-gray-500 dark:text-gray-400">
+            Remember your password?{" "}
+            <Link
+              href="/signIn"
+              className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+            >
+              Sign In
+            </Link>
+          </p>
+        </Form>
       </div>
     </div>
   );

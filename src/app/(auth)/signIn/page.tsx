@@ -46,7 +46,7 @@ const Page = () => {
       if (result?.error) {
         if (result.error.startsWith("not verified:")) {
           const userName = result.error.split(":")[1];
-          router.push(`/verify/${userName}`);
+          router.push(`/verify/${userName}?purpose=user verification`);
         } else {
           toast.error(result.error);
         }
@@ -128,6 +128,15 @@ const Page = () => {
             className="font-medium text-primary-600 hover:underline dark:text-primary-500"
           >
             Sign Up
+          </Link>
+        </p>
+        <p className="text-sm text-center text-gray-500 dark:text-gray-400">
+          Reset Password{" "}
+          <Link
+            href="/resetPassword"
+            className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+          >
+            Reset
           </Link>
         </p>
       </div>
