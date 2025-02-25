@@ -11,7 +11,7 @@ export async function middleware(req: NextRequest) {
 
     if (!token) {
       const signInUrl = new URL("/signIn", req.nextUrl.origin);
-      signInUrl.searchParams.set("callbackUrl", req.nextUrl.pathname); // Redirect back to the original page after sign-in
+      signInUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);
       return NextResponse.redirect(signInUrl);
     }
 

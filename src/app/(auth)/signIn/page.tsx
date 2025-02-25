@@ -82,6 +82,27 @@ const Page = () => {
             Enter your credentials to access your account
           </p>
         </div>
+        <Button
+          onClick={handleGoogleSignIn}
+          variant="outline"
+          className="w-full flex items-center justify-center gap-2"
+        >
+          <Image
+            src="https://www.google.com/favicon.ico"
+            alt="Google"
+            width={16}
+            height={16}
+            className="w-4 h-4"
+          />
+          Sign In with Google
+        </Button>
+        <div className="flex items-center justify-center">
+          <div className="w-full border-t border-gray-300 dark:border-gray-700" />
+          <span className="px-2 text-sm text-gray-500 dark:text-gray-400">
+            OR
+          </span>
+          <div className="w-full border-t border-gray-300 dark:border-gray-700" />
+        </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -129,45 +150,25 @@ const Page = () => {
             </Button>
           </form>
         </Form>
-        <div className="flex items-center justify-center">
-          <div className="w-full border-t border-gray-300 dark:border-gray-700" />
-          <span className="px-2 text-sm text-gray-500 dark:text-gray-400">
-            OR
-          </span>
-          <div className="w-full border-t border-gray-300 dark:border-gray-700" />
+        <div className="flex flex-col items-center space-y-2">
+          <p className="text-sm text-center text-gray-500 dark:text-gray-400">
+            New Here?{" "}
+            <Link
+              href="/signUp"
+              className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+            >
+              Sign Up
+            </Link>
+          </p>
+          <p className="text-sm text-center text-gray-500 dark:text-gray-400">
+            <Link
+              href="/resetPassword"
+              className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+            >
+              Reset Password
+            </Link>
+          </p>
         </div>
-        <Button
-          onClick={handleGoogleSignIn}
-          variant="outline"
-          className="w-full flex items-center justify-center gap-2"
-        >
-          <Image
-            src="https://www.google.com/favicon.ico"
-            alt="Google"
-            width={16}
-            height={16} 
-            className="w-4 h-4" 
-          />
-          Sign In with Google
-        </Button>
-        <p className="text-sm text-center text-gray-500 dark:text-gray-400">
-          New Here?{" "}
-          <Link
-            href="/signUp"
-            className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-          >
-            Sign Up
-          </Link>
-        </p>
-        <p className="text-sm text-center text-gray-500 dark:text-gray-400">
-          Reset Password{" "}
-          <Link
-            href="/resetPassword"
-            className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-          >
-            Reset
-          </Link>
-        </p>
       </div>
     </div>
   );
