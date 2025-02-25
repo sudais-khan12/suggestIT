@@ -1,0 +1,53 @@
+import dbConnect from "@/lib/dbconnect";
+import UserModel from "@/models/Users";
+import { Message } from "@/models/Users";
+
+// send message
+export async function POST(request: Request) {
+  await dbConnect();
+  try {
+    const { userName, message } = await request.json();
+
+    if (!userName || !message) {
+      return Response.json(
+        { message: "All fields are required", success: false },
+        { status: 400 }
+      );
+    }
+
+    const user = await UserModel.findOne({ userName });
+
+    if (!user) {
+      return Response.json(
+        { message: "User not found", success: false },
+        { status: 404 }
+      );
+    }
+
+    if (!user.isAcceptingMessages) {
+      return Response.json(
+        { message: "User not Accepting Messages", success: false },
+        { status: 400 }
+      );
+    }
+
+    const newMessage = {
+      content: message,
+      createdAt: new Date(),
+    };
+
+    user.messages.push(newMessage as Message);
+    await user.save();
+
+    return Response.json(
+      { message: "Message sent successfully", success: true },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error sending message:", error);
+    return Response.json(
+      { message: "Error sending message", success: false },
+      { status: 500 }
+    );
+  }
+}

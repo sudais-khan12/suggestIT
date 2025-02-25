@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { passwordValidation } from "./signUpSchema";
 
-export const signInSchema = z.object({
-  identifier: z.string().min(1, "Email or username is required"),
+export const setPasswordSchema = z.object({
   password: passwordValidation,
+  confirmPassword: passwordValidation,
 });
