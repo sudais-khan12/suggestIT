@@ -1,3 +1,10 @@
+"use client";
+import { Hero } from "@/components/AnimatedHero";
+
 export default function Home() {
-  return <div>Home</div>;
+  return (
+    <div className="block">
+      <Hero />
+    </div>
+  );
 }
