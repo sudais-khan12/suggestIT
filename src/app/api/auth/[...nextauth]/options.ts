@@ -2,9 +2,12 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { NextAuthOptions } from "next-auth";
 import bcrypt from "bcryptjs";
-import dbConnect from "@/lib/dbconnect";
+import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/models/Users";
 import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
+
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -24,6 +27,10 @@ export const authOptions: NextAuthOptions = {
 
         if (!credentials?.identifier || !credentials?.password) {
           throw new Error("Identifier and password are required.");
+        }
+
+        if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+          throw new Error("Missing Google OAuth environment variables");
         }
 
         try {
@@ -77,9 +84,8 @@ export const authOptions: NextAuthOptions = {
             throw new Error(`not verified:${user.userName}`);
           }
 
-          // User is verified, return user object
           return {
-            id: user._id.toString(),
+            _id: user?._id,
             email: user.email,
             userName: user.userName,
             isVerified: user.isVerified,
@@ -94,8 +100,8 @@ export const authOptions: NextAuthOptions = {
     }),
     // Add Google Provider
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: GOOGLE_CLIENT_ID || "",
+      clientSecret: GOOGLE_CLIENT_SECRET || "",
     }),
   ],
 

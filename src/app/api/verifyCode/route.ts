@@ -1,4 +1,4 @@
-import dbConnect from "@/lib/dbconnect";
+import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/models/Users";
 
 export async function POST(req: Request) {
@@ -18,7 +18,6 @@ export async function POST(req: Request) {
     }
 
     const decodedUserName = decodeURIComponent(userName);
-
     const user = await UserModel.findOne({ userName: decodedUserName });
 
     if (!user) {
@@ -61,7 +60,7 @@ export async function POST(req: Request) {
       {
         message: "User verified successfully",
         success: true,
-        data: user
+        data: user,
       },
       { status: 200 }
     );

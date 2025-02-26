@@ -1,5 +1,5 @@
 import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
-import dbConnect from "@/lib/dbconnect";
+import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/models/Users";
 import bcrypt from "bcryptjs";
 
@@ -7,6 +7,7 @@ export async function POST(request: Request) {
   await dbConnect();
   try {
     const { name, email, password } = await request.json();
+    console.log(name, email, password);
 
     // Validate required fields
     if (!name || !email || !password) {

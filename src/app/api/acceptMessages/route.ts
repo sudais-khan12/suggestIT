@@ -1,5 +1,5 @@
 // accept messages
-import dbConnect from "@/lib/dbconnect";
+import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/models/Users";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/options";

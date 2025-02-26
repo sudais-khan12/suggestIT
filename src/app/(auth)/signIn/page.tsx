@@ -67,7 +67,8 @@ const Page = () => {
     try {
       await signIn("google", { callbackUrl: "/dashboard" });
     } catch (error) {
-      toast.error("Failed to sign in with Google.", error);
+      console.error(error);
+      toast.error("Failed to sign in with Google.");
     }
   };
 

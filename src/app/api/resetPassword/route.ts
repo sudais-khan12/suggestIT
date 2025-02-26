@@ -1,5 +1,5 @@
 import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
-import dbConnect from "@/lib/dbconnect";
+import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/models/Users";
 
 export async function POST(request: Request) {
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
       100000 + Math.random() * 900000
     ).toString();
     const expiryDate = new Date();
-    expiryDate.setMinutes(expiryDate.getMinutes() + 15); 
+    expiryDate.setMinutes(expiryDate.getMinutes() + 15);
 
     user.verifyCode = verificationCode;
     user.verifyCodeExpiresAt = expiryDate;

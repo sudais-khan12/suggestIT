@@ -45,8 +45,9 @@ const VerifyAccount = () => {
 
       toast.success(response.data.message);
 
-      if (purpose === "reset password") {
-        router.replace(`/setNewPassword?user=${response.data.data._id}`);
+      const userId = response.data.data?._id;
+      if (purpose === "reset password" && userId) {
+        router.replace(`/setNewPassword?user=${userId}`);
       } else {
         toast.success(response.data.message);
         router.replace("/dashboard");
@@ -107,7 +108,9 @@ const VerifyAccount = () => {
                           value={form.getValues("code").split("")[index] || ""}
                           onChange={(e) => handleChange(index, e.target.value)}
                           onKeyDown={(e) => handleKeyDown(index, e)}
-                          ref={(el) => (inputsRef.current[index] = el)}
+                          ref={(el) => {
+                            inputsRef.current[index] = el;
+                          }}
                           className="text-center"
                           inputMode="numeric"
                           autoComplete="off"
