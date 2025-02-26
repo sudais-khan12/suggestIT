@@ -1,9 +1,12 @@
+"use client";
+
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { LogInIcon, MoveRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DotPattern } from "@/components/ui/dot-pattern";
 import Link from "next/link";
+import { useSession } from "next-auth/react"; // Import useSession
 
 function Hero() {
   const [titleNumber, setTitleNumber] = useState(0);
@@ -11,6 +14,8 @@ function Hero() {
     () => ["amazing", "new", "wonderful", "beautiful", "smart"],
     []
   );
+
+  const { data: session } = useSession(); // Check if user is signed in
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -85,20 +90,34 @@ function Hero() {
             </p>
           </div>
           <div className="flex flex-row gap-3">
-            <Link href="/signIn" passHref>
-              <Button asChild size="lg" className="gap-4" variant="outline">
-                <span>
-                  Sign In <LogInIcon className="w-4 h-4" />
-                </span>
-              </Button>
-            </Link>
-            <Link href="/signUp" passHref>
-              <Button asChild size="lg" className="gap-4">
-                <span>
-                  Sign up here <MoveRight className="w-4 h-4" />
-                </span>
-              </Button>
-            </Link>
+            {session ? (
+              // If user is signed in, show Dashboard button
+              <Link href="/dashboard" passHref>
+                <Button asChild size="lg" className="gap-4">
+                  <span>
+                    Go to Dashboard <MoveRight className="w-4 h-4" />
+                  </span>
+                </Button>
+              </Link>
+            ) : (
+              // If user is not signed in, show Sign In and Sign Up buttons
+              <>
+                <Link href="/signIn" passHref>
+                  <Button asChild size="lg" className="gap-4" variant="outline">
+                    <span>
+                      Sign In <LogInIcon className="w-4 h-4" />
+                    </span>
+                  </Button>
+                </Link>
+                <Link href="/signUp" passHref>
+                  <Button asChild size="lg" className="gap-4">
+                    <span>
+                      Sign up here <MoveRight className="w-4 h-4" />
+                    </span>
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import AuthProvider from "@/context/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
-import { DotPattern } from "@/components/ui/dot-pattern"; 
+import { DotPattern } from "@/components/ui/dot-pattern";
 import "./globals.css";
 
 export default function RootLayout({
