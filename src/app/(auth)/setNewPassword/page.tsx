@@ -19,6 +19,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { DotPattern } from "@/components/ui/dot-pattern";
+import Link from "next/link";
 
 const SetNewPasswordPage = () => {
   const searchParams = useSearchParams();
@@ -60,8 +62,19 @@ const SetNewPasswordPage = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+    <div className="relative flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900 overflow-hidden">
+      <DotPattern className="absolute inset-0 z-0" />
+      <div className="absolute inset-0 z-5 flex justify-center items-center">
+        <div
+          className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_30%,_rgba(255,255,255,0.7)_70%)] backdrop-blur-sm dark:bg-[radial-gradient(circle_at_center,_transparent_30%,_rgba(0,0,0,0.7)_70%)]"
+          style={{
+            mask: "radial-gradient(circle at center, transparent 30%, black 70%)",
+            WebkitMask:
+              "radial-gradient(circle at center, transparent 30%, black 70%)",
+          }}
+        ></div>
+      </div>
+      <div className="relative z-10 w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             Set New Password
@@ -121,6 +134,15 @@ const SetNewPasswordPage = () => {
             </Button>
           </form>
         </Form>
+        <p className="text-sm text-center text-gray-500 dark:text-gray-400">
+          Ohh i just remember{" "}
+          <Link
+            href="/signIn"
+            className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+          >
+            Sign in
+          </Link>
+        </p>
       </div>
     </div>
   );

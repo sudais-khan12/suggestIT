@@ -24,4 +24,5 @@ export interface ApiResponse {
   data?: string;
   isAcceptingMessage?: boolean;
   messages?: Message[];
+  userName: string
 }
