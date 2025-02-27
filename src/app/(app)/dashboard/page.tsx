@@ -12,10 +12,10 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { Switch } from "@/components/ui/switch"; // Assuming you have a Switch component
-import { Input } from "@/components/ui/input"; // Assuming you have an Input component
-import { Button } from "@/components/ui/button"; // Assuming you have a Button component
-import { Copy, RefreshCw } from "lucide-react"; // Icons for copy and refresh
+import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Copy, RefreshCw } from "lucide-react";
 
 const Page = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -82,7 +82,6 @@ const Page = () => {
     fetchAcceptMessage();
   }, [fetchMessages, session, setValue, fetchAcceptMessage, router]);
 
-  // Handle switch change
   const handleSwitchChange = async () => {
     try {
       const response = await axios.post<ApiResponse>("/api/acceptMessages", {
@@ -117,15 +116,12 @@ const Page = () => {
 
   return (
     <>
-      {/* Navbar */}
       <div>
         <Navbar />
       </div>
 
-      {/* Dashboard Content */}
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
         <div className="max-w-4xl mx-auto">
-          {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
               User Dashboard
@@ -135,7 +131,6 @@ const Page = () => {
             </p>
           </div>
 
-          {/* Profile URL Section */}
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Your Profile URL
@@ -153,8 +148,6 @@ const Page = () => {
               </Button>
             </div>
           </div>
-
-          {/* Accept Messages Toggle */}
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Accept Messages
@@ -172,7 +165,6 @@ const Page = () => {
             </div>
           </div>
 
-          {/* Messages Section */}
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Your Messages
