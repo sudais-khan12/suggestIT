@@ -3,7 +3,7 @@
 import { ApiResponse } from "@/@types/models/Email";
 import MessageCard from "@/components/MessageCard";
 import Navbar from "@/components/Navbar";
-import { Message, User } from "@/models/Users";
+import { Message } from "@/models/Users";
 import { acceptMessageSchema } from "@/schemas/acceptMessageSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
@@ -181,7 +181,7 @@ const Page = () => {
               {messages.length > 0 ? (
                 messages.map((message) => (
                   <MessageCard
-                    key={message._id}
+                    key={message.id}
                     message={message}
                     onMessageDelete={handleDeleteMessage}
                   />

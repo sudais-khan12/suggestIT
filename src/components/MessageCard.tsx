@@ -35,7 +35,7 @@ const MessageCard = ({ message, onMessageDelete }: MessageCardProps) => {
       "/api/messages/" + message._id
     );
     if (response.data.success) {
-      onMessageDelete(message?._id);
+      onMessageDelete(message?.id);
       toast.success(response.data.message);
     } else {
       toast.error(response.data.message);
