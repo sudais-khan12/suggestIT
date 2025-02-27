@@ -120,10 +120,11 @@ const Page = () => {
         <Navbar />
       </div>
 
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
               User Dashboard
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
@@ -131,41 +132,53 @@ const Page = () => {
             </p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Your Profile URL
-            </h2>
-            <div className="flex items-center gap-2">
-              <Input
-                type="text"
-                value={profileUrl}
-                readOnly
-                className="flex-1 bg-gray-100 dark:bg-gray-700"
-              />
-              <Button onClick={copyToClipboard} size="sm" variant="outline">
-                <Copy className="w-4 h-4 mr-2" />
-                Copy
-              </Button>
+          {/* Grid Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Profile URL Card */}
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                Your Profile URL
+              </h2>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="text"
+                  value={profileUrl}
+                  readOnly
+                  className="flex-1 bg-gray-100 dark:bg-gray-700"
+                />
+                <Button
+                  onClick={copyToClipboard}
+                  size="sm"
+                  variant="outline"
+                  className="hover:bg-gray-200 dark:hover:bg-gray-700"
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  Copy
+                </Button>
+              </div>
             </div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Accept Messages
-            </h2>
-            <div className="flex items-center gap-2">
-              <Switch
-                {...register("acceptMessages")}
-                checked={acceptMessages}
-                onCheckedChange={handleSwitchChange}
-                disabled={isSwitchLoading}
-              />
-              <span className="text-gray-700 dark:text-gray-300">
-                {acceptMessages ? "Enabled" : "Disabled"}
-              </span>
+
+            {/* Accept Messages Card */}
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                Accept Messages
+              </h2>
+              <div className="flex items-center gap-2">
+                <Switch
+                  {...register("acceptMessages")}
+                  checked={acceptMessages}
+                  onCheckedChange={handleSwitchChange}
+                  disabled={isSwitchLoading}
+                />
+                <span className="text-gray-700 dark:text-gray-300">
+                  {acceptMessages ? "Enabled" : "Disabled"}
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          {/* Messages Section */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 mt-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Your Messages
             </h2>
@@ -186,7 +199,7 @@ const Page = () => {
             </div>
             <Button
               onClick={() => fetchMessages(true)}
-              className="mt-4"
+              className="mt-4 w-full md:w-auto"
               variant="outline"
               disabled={isLoading}
             >
