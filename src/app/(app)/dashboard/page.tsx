@@ -122,7 +122,6 @@ const Page = () => {
 
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6">
         <div className="max-w-6xl mx-auto">
-          {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
               User Dashboard
@@ -132,9 +131,7 @@ const Page = () => {
             </p>
           </div>
 
-          {/* Grid Layout */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Profile URL Card */}
             <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Your Profile URL
@@ -158,7 +155,6 @@ const Page = () => {
               </div>
             </div>
 
-            {/* Accept Messages Card */}
             <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Accept Messages
@@ -177,7 +173,6 @@ const Page = () => {
             </div>
           </div>
 
-          {/* Messages Section */}
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 mt-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Your Messages
