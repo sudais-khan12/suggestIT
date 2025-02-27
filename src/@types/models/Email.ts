@@ -22,7 +22,7 @@ export interface ApiResponse {
   message: string;
   success: boolean;
   data?: string;
-  isAcceptingMessage?: boolean;
+  isAcceptingMessages?: boolean;
   messages?: Message[];
   userName: string
 }

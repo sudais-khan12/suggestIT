@@ -26,7 +26,7 @@ import { toast } from "sonner";
 
 type MessageCardProps = {
   message: Message;
-  onMessageDelete: (messageId: string | unknown) => void;
+  onMessageDelete: (messageId: string) => void;
 };
 
 const MessageCard = ({ message, onMessageDelete }: MessageCardProps) => {
