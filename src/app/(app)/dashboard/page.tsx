@@ -33,6 +33,7 @@ const Page = () => {
 
   const handleDeleteMessage = (messageId: string) => {
     setMessages(messages.filter((message) => message._id !== messageId));
+    fetchMessages(true);
     toast.success("Message deleted successfully!");
   };
 
@@ -56,6 +57,7 @@ const Page = () => {
       try {
         const response = await axios.get<ApiResponse>("/api/getMessages");
         setMessages(response.data.messages ?? []);
+
         if (refresh) {
           fetchAcceptMessage();
           toast.success("Messages fetched successfully!");
@@ -73,7 +75,6 @@ const Page = () => {
 
   useEffect(() => {
     if (!session || !session.user) {
-      router.push("/");
       toast.error("Please sign in to access your dashboard.");
       return;
     }
@@ -84,10 +85,11 @@ const Page = () => {
 
   const handleSwitchChange = async () => {
     try {
+      const newAcceptMessages = !acceptMessages;
       const response = await axios.post<ApiResponse>("/api/acceptMessages", {
-        isAcceptingMessages: !acceptMessages,
+        isAcceptingMessages: newAcceptMessages,
       });
-      setValue("acceptMessages", !acceptMessages);
+      setValue("acceptMessages", newAcceptMessages);
       toast.success(response.data.message);
     } catch (error) {
       console.error("Error updating accept message:", error);
@@ -181,7 +183,7 @@ const Page = () => {
               {messages.length > 0 ? (
                 messages.map((message) => (
                   <MessageCard
-                    key={message.id}
+                    key={message._id}
                     message={message}
                     onMessageDelete={handleDeleteMessage}
                   />

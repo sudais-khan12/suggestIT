@@ -8,11 +8,9 @@ import mongoose from "mongoose";
 export async function GET() {
   await dbConnect();
 
-  // Get the session and user
   const session = await getServerSession(authOptions);
   const sessionUser = session?.user as User;
 
-  // Check if the user is authenticated
   if (!sessionUser || !sessionUser._id) {
     return Response.json(
       { message: "User not authenticated", success: false },
@@ -21,25 +19,23 @@ export async function GET() {
   }
 
   try {
-    // Convert the user ID to a Mongoose ObjectId
     const userId = new mongoose.Types.ObjectId(sessionUser._id);
 
-    // Aggregation pipeline to get user messages
     const userWithMessages = await UserModel.aggregate([
       {
         $match: {
-          _id: userId, // Match the user by ID
+          _id: userId,
         },
       },
       {
         $unwind: {
           path: "$messages",
-          preserveNullAndEmptyArrays: true, // Include users with no messages
+          preserveNullAndEmptyArrays: true,
         },
       },
       {
         $sort: {
-          "messages.createdAt": -1, // Sort messages by createdAt in descending order
+          "messages.createdAt": -1,
         },
       },
       {
@@ -47,6 +43,7 @@ export async function GET() {
           _id: "$_id",
           messages: {
             $push: {
+              _id: "$messages._id",
               content: "$messages.content",
               createdAt: "$messages.createdAt",
             },
@@ -55,7 +52,6 @@ export async function GET() {
       },
     ]);
 
-    // Check if the user was found
     if (!userWithMessages || userWithMessages.length === 0) {
       return Response.json(
         { message: "User not found or no messages available", success: false },
@@ -63,7 +59,6 @@ export async function GET() {
       );
     }
 
-    // Return the messages
     return Response.json(
       { messages: userWithMessages[0].messages, success: true },
       { status: 200 }

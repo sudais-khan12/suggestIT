@@ -19,11 +19,11 @@ export async function POST(req: Request) {
 
   try {
     const userId = user?._id;
-    const { acceptMessages } = await req.json();
+    const { isAcceptingMessages } = await req.json();
 
     const updatedUser = await UserModel.findOneAndUpdate(
       { _id: userId },
-      { isAcceptingMessages: acceptMessages },
+      { isAcceptingMessages: isAcceptingMessages },
       { new: true }
     );
 
@@ -35,7 +35,10 @@ export async function POST(req: Request) {
     }
 
     return Response.json(
-      { message: "Messages accepted", success: true },
+      {
+        message: `Messages Accepted ${isAcceptingMessages ? "Enabled" : "Disabled"}`,
+        success: true,
+      },
       { status: 200 }
     );
   } catch (error) {

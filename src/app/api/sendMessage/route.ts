@@ -2,7 +2,6 @@ import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/models/Users";
 import { Message } from "@/models/Users";
 
-// send message
 export async function POST(request: Request) {
   await dbConnect();
   try {
