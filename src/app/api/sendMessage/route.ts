@@ -2,20 +2,19 @@ import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/models/Users";
 import { Message } from "@/models/Users";
 
-// send message
 export async function POST(request: Request) {
   await dbConnect();
   try {
-    const { userName, message } = await request.json();
+    const { userId, message } = await request.json();
 
-    if (!userName || !message) {
+    if (!userId || !message) {
       return Response.json(
         { message: "All fields are required", success: false },
         { status: 400 }
       );
     }
 
-    const user = await UserModel.findOne({ userName });
+    const user = await UserModel.findOne({ _id: userId });
 
     if (!user) {
       return Response.json(
