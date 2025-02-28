@@ -34,7 +34,6 @@ const Page = () => {
   const handleDeleteMessage = (messageId: string) => {
     setMessages(messages.filter((message) => message._id !== messageId));
     fetchMessages(true);
-    toast.success("Message deleted successfully!");
   };
 
   const fetchAcceptMessage = useCallback(async () => {
@@ -60,7 +59,6 @@ const Page = () => {
 
         if (refresh) {
           fetchAcceptMessage();
-          toast.success("Messages fetched successfully!");
         }
       } catch (error) {
         console.error("Error fetching messages:", error);
@@ -183,7 +181,7 @@ const Page = () => {
               {messages.length > 0 ? (
                 messages.map((message) => (
                   <MessageCard
-                    key={message._id}
+                    key={message._id as string}
                     message={message}
                     onMessageDelete={handleDeleteMessage}
                   />
@@ -200,7 +198,9 @@ const Page = () => {
               variant="outline"
               disabled={isLoading}
             >
-              <RefreshCw className="w-4 h-4 mr-2" />
+              <RefreshCw
+                className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+              />
               Refresh Messages
             </Button>
           </div>
