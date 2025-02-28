@@ -1,11 +1,5 @@
 "use client";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,7 +17,7 @@ import { Message } from "@/models/Users";
 import axios from "axios";
 import { ApiResponse } from "@/@types/models/Email";
 import { toast } from "sonner";
-
+import { formatDistanceToNow } from "date-fns";
 type MessageCardProps = {
   message: Message;
   onMessageDelete: (messageId: string) => void;
@@ -35,23 +29,23 @@ const MessageCard = ({ message, onMessageDelete }: MessageCardProps) => {
       data: { messageId: message._id },
     });
     if (response.data.success) {
-      onMessageDelete(message?.id);
+      onMessageDelete(message._id);
       toast.success(response.data.message);
     } else {
       toast.error(response.data.message);
     }
   };
 
+  const timeAgo = formatDistanceToNow(new Date(message.createdAt), {
+    addSuffix: true,
+  });
+
   return (
     <Card className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 rounded-lg shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between p-4">
         <div>
-          <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
-            {message.content}
-          </CardTitle>
-          <CardDescription className="text-sm text-gray-600 dark:text-gray-400">
-            {new Date(message.createdAt).toLocaleString()}
-          </CardDescription>
+          <p className="text-gray-900 dark:text-white">{message.content}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{timeAgo}</p>
         </div>
         <AlertDialog>
           <AlertDialogTrigger asChild>
@@ -87,9 +81,6 @@ const MessageCard = ({ message, onMessageDelete }: MessageCardProps) => {
           </AlertDialogContent>
         </AlertDialog>
       </CardHeader>
-      <CardContent className="p-4">
-        <p className="text-gray-700 dark:text-gray-300">{message.content}</p>
-      </CardContent>
     </Card>
   );
 };
