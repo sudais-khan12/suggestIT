@@ -10,13 +10,13 @@ const RouteLoader = () => {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    setIsLoading(true); // Show loader when route changes
+    setIsLoading(true);
 
     const timeoutId = setTimeout(() => {
-      setIsLoading(false); // Hide loader after a short delay
-    }, 500); // Adjust the delay as needed
+      setIsLoading(false);
+    }, 500);
 
-    return () => clearTimeout(timeoutId); // Cleanup timeout
+    return () => clearTimeout(timeoutId);
   }, [pathname, searchParams]);
 
   return isLoading ? <Loading /> : null;
