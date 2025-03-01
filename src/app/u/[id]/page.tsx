@@ -50,7 +50,7 @@ const Page = () => {
         message: data.content,
       });
       toast.success(response.data.message);
-      form.reset(); 
+      form.reset();
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast.error(axiosError.response?.data.message ?? "Error sending message");
@@ -64,7 +64,7 @@ const Page = () => {
     try {
       const response = await axios.post(`/api/suggestMessages`);
       const result = response.data; // Assuming the backend sends the response as plain text
-      const messages = result.split("||").map((msg) => msg.trim()); // Split by '||' and trim each message
+      const messages = result.split("||").map((msg: string) => msg.trim()); // Split by '||' and trim each message
       setSuggestedMessages(messages);
       toast.success("Suggestions fetched successfully");
     } catch (error) {

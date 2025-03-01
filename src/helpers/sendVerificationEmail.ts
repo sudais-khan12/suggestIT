@@ -28,7 +28,7 @@ export async function sendVerificationEmail(
       return {
         message: "Email sent successfully",
         success: true,
-        isAcceptingMessage: true,
+        isAcceptingMessages: true,
       };
     } else {
       throw new Error("Email rejected by server");
