@@ -15,12 +15,13 @@ import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Copy, RefreshCw } from "lucide-react";
+import { Copy, Check, RefreshCw } from "lucide-react";
 
 const Page = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSwitchLoading, setIsSwitchLoading] = useState(false);
+  const [isCopied, setIsCopied] = useState(false); // State for clipboard icon
   const router = useRouter();
 
   const { data: session } = useSession();
@@ -107,7 +108,9 @@ const Page = () => {
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(profileUrl);
+      setIsCopied(true); // Set copied state to true
       toast.success("Copied to clipboard!");
+      setTimeout(() => setIsCopied(false), 2000); // Revert to clipboard icon after 2 seconds
     } catch (error) {
       console.error("Error copying to clipboard:", error);
       toast.error("Error copying to clipboard");
@@ -132,6 +135,7 @@ const Page = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Updated Profile URL Section */}
             <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Your Profile URL
@@ -141,17 +145,18 @@ const Page = () => {
                   type="text"
                   value={profileUrl}
                   readOnly
-                  className="flex-1 bg-gray-100 dark:bg-gray-700"
+                  className="flex-1 bg-gray-100 dark:bg-gray-700 pr-10" // Add padding for the icon
                 />
-                <Button
+                <div
+                  className="relative -ml-8 cursor-pointer" // Position the icon inside the input
                   onClick={copyToClipboard}
-                  size="sm"
-                  variant="outline"
-                  className="hover:bg-gray-200 dark:hover:bg-gray-700"
                 >
-                  <Copy className="w-4 h-4 mr-2" />
-                  Copy
-                </Button>
+                  {isCopied ? (
+                    <Check className="w-4 h-4 text-green-500" /> // Show tick icon when copied
+                  ) : (
+                    <Copy className="w-4 h-4 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300" /> // Show clipboard icon
+                  )}
+                </div>
               </div>
             </div>
 
