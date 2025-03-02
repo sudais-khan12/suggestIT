@@ -18,6 +18,7 @@ import axios from "axios";
 import { ApiResponse } from "@/@types/models/Email";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
+
 type MessageCardProps = {
   message: Message;
   onMessageDelete: (messageId: string) => void;
@@ -36,9 +37,11 @@ const MessageCard = ({ message, onMessageDelete }: MessageCardProps) => {
     }
   };
 
-  const timeAgo = formatDistanceToNow(new Date(message.createdAt), {
-    addSuffix: true,
-  });
+  // Validate `message.createdAt` before using it
+  const createdAtDate = message.createdAt ? new Date(message.createdAt) : null;
+  const timeAgo = createdAtDate
+    ? formatDistanceToNow(createdAtDate, { addSuffix: true })
+    : "Invalid date";
 
   return (
     <Card className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 rounded-lg shadow-sm">

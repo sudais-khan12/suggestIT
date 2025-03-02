@@ -184,9 +184,9 @@ const Page = () => {
             </h2>
             <div className="space-y-4">
               {messages.length > 0 ? (
-                messages.map((message) => (
+                messages.map((message, index) => (
                   <MessageCard
-                    key={message._id as string}
+                    key={message._id || `message-${index}`} // Fallback to index if _id is not available
                     message={message}
                     onMessageDelete={handleDeleteMessage}
                   />
