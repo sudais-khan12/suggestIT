@@ -7,7 +7,6 @@ export async function POST(request: Request) {
   await dbConnect();
   try {
     const { name, email, password } = await request.json();
-    console.log(name, email, password);
 
     // Validate required fields
     if (!name || !email || !password) {

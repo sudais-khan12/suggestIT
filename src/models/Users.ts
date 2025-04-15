@@ -4,6 +4,8 @@ export interface Message extends Document {
   _id: string;
   content: string;
   createdAt: Date;
+  senderId?: string;
+  senderName: string;
 }
 
 export interface User extends Document {
@@ -18,8 +20,25 @@ export interface User extends Document {
 }
 
 const MessageSchema: Schema<Message> = new Schema({
-  content: { type: String, required: true },
-  createdAt: { type: Date, required: true, default: Date.now },
+  content: {
+    type: String,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    required: true,
+    default: Date.now,
+  },
+  senderId: {
+    type: String,
+    required: false,
+    default: null,
+  },
+  senderName: {
+    type: String,
+    required: true,
+    default: "unknown",
+  },
 });
 
 const UserSchema: Schema<User> = new Schema({

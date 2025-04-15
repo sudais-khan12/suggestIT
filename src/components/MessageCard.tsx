@@ -36,6 +36,7 @@ const MessageCard = ({ message, onMessageDelete }: MessageCardProps) => {
       toast.error(response.data.message);
     }
   };
+  console.log(message);
 
   // Validate `message.createdAt` before using it
   const createdAtDate = message.createdAt ? new Date(message.createdAt) : null;

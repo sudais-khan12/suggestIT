@@ -5,9 +5,9 @@ import { Message } from "@/models/Users";
 export async function POST(request: Request) {
   await dbConnect();
   try {
-    const { userId, message } = await request.json();
+    const { userId, message, senderId } = await request.json();
 
-    if (!userId || !message) {
+    if (!userId || !message || !senderId) {
       return Response.json(
         { message: "All fields are required", success: false },
         { status: 400 }
@@ -23,6 +23,13 @@ export async function POST(request: Request) {
       );
     }
 
+    if (senderId === userId) {
+      return Response.json(
+        { message: "You cannot send a message to yourself", success: false },
+        { status: 400 }
+      );
+    }
+
     if (!user.isAcceptingMessages) {
       return Response.json(
         { message: "User not Accepting Messages", success: false },
@@ -30,9 +37,24 @@ export async function POST(request: Request) {
       );
     }
 
+    // Initialize senderName as "unknown" by default
+    let senderName = "unknown";
+
+    // If senderId is not "unknown", look up the sender's name
+    if (senderId !== "unknown") {
+      const sender = await UserModel.findOne({ _id: senderId }).select(
+        "userName"
+      );
+      if (sender) {
+        senderName = sender.userName;
+      }
+    }
+
     const newMessage = {
       content: message,
       createdAt: new Date(),
+      senderId: senderId,
+      senderName: senderName, // Now we're saving the name directly
     };
 
     user.messages.push(newMessage as Message);

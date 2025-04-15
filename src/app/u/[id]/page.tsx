@@ -22,11 +22,16 @@ import {
   FormDescription,
   FormMessage,
 } from "@/components/ui/form";
+import { useSession } from "next-auth/react";
+import { User } from "@/models/Users";
 
 const Page = () => {
   const [isSending, setIsSending] = useState(false);
   const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
   const [suggestedMessages, setSuggestedMessages] = useState<string[]>([]);
+
+  const { data: session, status } = useSession();
+  const user: User | undefined = session?.user as User;
 
   const form = useForm<z.infer<typeof messageSchema>>({
     resolver: zodResolver(messageSchema),
@@ -40,15 +45,24 @@ const Page = () => {
 
   useEffect(() => {
     getSuggestedMessages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onSubmit = async (data: z.infer<typeof messageSchema>) => {
     setIsSending(true);
     try {
+      // Check if the recipient ID is valid
+      if (!userId) {
+        toast.error("Invalid recipient");
+        return;
+      }
+
       const response = await axios.post<ApiResponse>(`/api/sendMessage`, {
         userId,
         message: data.content,
+        senderId: user?._id || "unknown", // Send "unknown" if user is not authenticated
       });
+
       toast.success(response.data.message);
       form.reset();
     } catch (error) {
@@ -60,11 +74,17 @@ const Page = () => {
   };
 
   const getSuggestedMessages = async () => {
+    // Only allow fetching suggestions if user is authenticated
+    if (status !== "authenticated") {
+      toast.info("Please sign in to get message suggestions");
+      return;
+    }
+
     setIsFetchingSuggestions(true);
     try {
       const response = await axios.post(`/api/suggestMessages`);
-      const result = response.data; // Assuming the backend sends the response as plain text
-      const messages = result.split("||").map((msg: string) => msg.trim()); // Split by '||' and trim each message
+      const result = response.data;
+      const messages = result.split("||").map((msg: string) => msg.trim());
       setSuggestedMessages(messages);
       toast.success("Suggestions fetched successfully");
     } catch (error) {
@@ -93,6 +113,13 @@ const Page = () => {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
               Send a Message
             </h1>
+
+            {status === "unauthenticated" && (
+              <div className="mb-6 p-4 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded-lg">
+                You are sending this message anonymously. Sign in to track your
+                messages.
+              </div>
+            )}
 
             <Form {...form}>
               <form
@@ -139,46 +166,48 @@ const Page = () => {
               </form>
             </Form>
 
-            <div className="mt-10">
-              <Button
-                onClick={getSuggestedMessages}
-                disabled={isFetchingSuggestions}
-                className="w-full sm:w-auto bg-transparent border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-300 mb-6"
-              >
-                {isFetchingSuggestions ? (
-                  <>
-                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                    Fetching Suggestions...
-                  </>
-                ) : (
-                  <>
-                    <RefreshCw className="mr-2 h-4 w-4" />
-                    Get Suggested Messages
-                  </>
-                )}
-              </Button>
+            {status === "authenticated" && (
+              <div className="mt-10">
+                <Button
+                  onClick={getSuggestedMessages}
+                  disabled={isFetchingSuggestions}
+                  className="w-full sm:w-auto bg-transparent border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-300 mb-6"
+                >
+                  {isFetchingSuggestions ? (
+                    <>
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                      Fetching Suggestions...
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="mr-2 h-4 w-4" />
+                      Get Suggested Messages
+                    </>
+                  )}
+                </Button>
 
-              {suggestedMessages.length > 0 && (
-                <div className="space-y-4">
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    Suggested Messages
-                  </h2>
-                  <div className="space-y-3">
-                    {suggestedMessages.map((message, index) => (
-                      <div
-                        key={index}
-                        className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300"
-                        onClick={() => handleSuggestionClick(message)}
-                      >
-                        <p className="text-gray-900 dark:text-white">
-                          {message}
-                        </p>
-                      </div>
-                    ))}
+                {suggestedMessages.length > 0 && (
+                  <div className="space-y-4">
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                      Suggested Messages
+                    </h2>
+                    <div className="space-y-3">
+                      {suggestedMessages.map((message, index) => (
+                        <div
+                          key={index}
+                          className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300"
+                          onClick={() => handleSuggestionClick(message)}
+                        >
+                          <p className="text-gray-900 dark:text-white">
+                            {message}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

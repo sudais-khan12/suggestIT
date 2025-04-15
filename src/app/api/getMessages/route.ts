@@ -46,6 +46,8 @@ export async function GET() {
               _id: "$messages._id",
               content: "$messages.content",
               createdAt: "$messages.createdAt",
+              senderId: "$messages.senderId",
+              senderName: "$messages.senderName",
             },
           },
         },
@@ -58,7 +60,8 @@ export async function GET() {
         { status: 404 }
       );
     }
-
+    console.log(userWithMessages[0].messages);
+    
     return Response.json(
       { messages: userWithMessages[0].messages, success: true },
       { status: 200 }
