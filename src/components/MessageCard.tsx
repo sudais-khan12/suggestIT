@@ -36,29 +36,44 @@ const MessageCard = ({ message, onMessageDelete }: MessageCardProps) => {
       toast.error(response.data.message);
     }
   };
-  console.log(message);
 
-  // Validate `message.createdAt` before using it
   const createdAtDate = message.createdAt ? new Date(message.createdAt) : null;
   const timeAgo = createdAtDate
     ? formatDistanceToNow(createdAtDate, { addSuffix: true })
     : "Invalid date";
 
   return (
-    <Card className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 rounded-lg shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between p-4">
-        <div>
-          <p className="text-gray-900 dark:text-white">{message.content}</p>
-          <p className="text-sm text-gray-600 dark:text-gray-400">{timeAgo}</p>
+    <Card className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+      <CardHeader className="flex flex-row items-start justify-between p-4 gap-4">
+        <div className="flex-1 space-y-2">
+          <p className="text-gray-900 dark:text-white text-sm sm:text-base">
+            {message.content}
+          </p>
+
+          <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+            <span className="text-gray-600 dark:text-gray-400">{timeAgo}</span>
+            {message.senderName && (
+              <>
+                <span className="text-gray-400 dark:text-gray-500">•</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  by{" "}
+                  <span className="font-medium text-gray-700 dark:text-gray-300">
+                    {message.senderName}
+                  </span>
+                </span>
+              </>
+            )}
+          </div>
         </div>
+
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button
               variant="ghost"
               size="icon"
-              className="hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400"
+              className="h-8 w-8 hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3 h-3" />
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50">
